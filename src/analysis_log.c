@@ -11,7 +11,7 @@ char fileStr[MAXLENGTHFILE]; // tao 1 mang co ten la fileStr kich thuong 5000
 int filetoStr(char *str); // khai bao ham nguyen mau ten filetoStr voi tham so
                           // la 1 pointer dinh dang char co ten la
 
-void reverse_string(char *str);
+// void reverse_string(char *str);
 //---------------------------------------------------------------------------------//
 
 int main() {
@@ -20,41 +20,69 @@ int main() {
   char *str_destination =
       filecpy; // pointer to store an address of the filecpy array.
   char keyword[] = "\"cmd\":\"set\"";
-  int count_loop = 0;
-  char *str_search = strstr(fileStr, keyword);
+  char *token;
+  const char *delimiters = "\'\n\'";
 
-  while (str_search != NULL) {
-    reverse_string(str_search); // dao nguoc chuoi de thuc hien loai bo tu khoa
-    printf("-----------------------------------------------------\n");
-    printf("Start: Chuoi str_search reverse: %s\n", str_search); // check hang
-    int num_str_search = strlen(str_search);
-    int num_keyword = strlen(keyword);
+  // printf("\n delemiters : %s",delimiters);
 
-    printf("num_str_search=:%d\n", num_str_search);
-    printf("num_strkeyword=:%d\n", num_keyword);
+  char network_token[MAXLENGTHFILE] = "";
+  /* printf("\nNhap ma network token:");
+   scanf("%s", network_token);
+   printf("\nchuoi network token la: %s", network_token);
+ */
+  //  int token_length = strlen(network_token);
+  int numblock = 0;
+  token = strtok(fileStr, delimiters);
 
-    int num = strlen(str_search) - strlen(keyword); // tinh toan n phuc vu cho
-    printf("n=: %d\n", num);
+  while (token != NULL) {
 
-    strncpy(str_destination, str_search,
-            num);                    // copy chuoi reverse de bo tu khoa
-    str_destination[num] = '\0';     // Add null terminator
-    reverse_string(str_destination); // reverse chuoi lan thu 2
-    printf("Chuoi string moi la: %s\n", str_destination); // check hang xem
+    token = strtok(NULL, delimiters);
+    char *is_cmdset = strstr(token, keyword);
+    char *is_networktoken = strstr(token, network_token);
+    if (is_cmdset && is_networktoken) {
 
-    strcpy(str_search, str_destination);
-    printf("chuoi str_search moi:%s\n", str_search);
+      printf("%s\n", token);
+      numblock++;
+    }
 
-    //*str_destination = '\0';
-    printf("check str_destination: %s\n", str_destination);
-    str_search = strstr(str_search, keyword);
+    printf("numblock=%d", numblock);
+  }
+  /* int count_loop = 0;
+   char *str_search = strstr(fileStr, keyword);
 
-    printf("END: chuoi str_search moi:%s\n", str_search);
-    printf("-----------------------------------------------------------\n");
-    count_loop++;
-  };
+   while (str_search != NULL) {
+     reverse_string(str_search); // dao nguoc chuoi de thuc hien loai bo tu khoa
+     printf("-----------------------------------------------------\n");
+     printf("Start: Chuoi str_search reverse: %s\n", str_search); // check hang
+     int num_str_search = strlen(str_search);
+     int num_keyword = strlen(keyword);
 
-  printf("So lan lap:%d\n", count_loop);
+     printf("num_str_search=:%d\n", num_str_search);
+     printf("num_strkeyword=:%d\n", num_keyword);
+
+     int num = strlen(str_search) - strlen(keyword); // tinh toan n phuc vu cho
+     printf("n=: %d\n", num);
+
+     strncpy(str_destination, str_search,
+             num);                    // copy chuoi reverse de bo tu khoa
+     str_destination[num] = '\0';     // Add null terminator
+     reverse_string(str_destination); // reverse chuoi lan thu 2
+     printf("Chuoi string moi la: %s\n", str_destination); // check hang xem
+
+     strcpy(str_search, str_destination);
+     printf("chuoi str_search moi:%s\n", str_search);
+
+     // *str_destination = '\0';
+     printf("check str_destination: %s\n", str_destination);
+     str_search = strstr(str_search, keyword);
+
+     printf("END: chuoi str_search moi:%s\n", str_search);
+     printf("-----------------------------------------------------------\n");
+     count_loop++;
+   };
+
+   printf("So lan lap:%d\n", count_loop);
+   */
   return 0;
 }
 
@@ -75,8 +103,8 @@ int filetoStr(char *str) {
     return -1;                       // tra ve gia tri la -1
   }
   status = fread(str, MAXLENGTHFILE, 1, fp);
-  printf("Noi dung cua file log.txt: \n%s",
-         str);   // in noi dung cua file log.txt ra cua so terminal
+  // printf("Noi dung cua file log.txt: \n%s",
+  //        str);   // in noi dung cua file log.txt ra cua so terminal
   fclose(fp);    // dong file
   fp = NULL;     // gan gia tri NULL cho con tro fp
   return status; // tra ve gia tri la status
