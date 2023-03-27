@@ -1,0 +1,3 @@
+D:/FUNIX/REVIEW/IOT101X/Assignment_2_IOT/build/CMakeFiles/Assignment_2_IOT.dir
+D:/FUNIX/REVIEW/IOT101X/Assignment_2_IOT/build/CMakeFiles/ALL_BUILD.dir
+D:/FUNIX/REVIEW/IOT101X/Assignment_2_IOT/build/CMakeFiles/ZERO_CHECK.dir

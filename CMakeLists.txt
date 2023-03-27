@@ -1,0 +1,10 @@
+
+cmake_minimum_required(VERSION 3.25)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_C_COMPILER gcc) 
+set(CMAKE_CXX_COMPILER g++)
+project(Assignment_2)
+include_directories(include)
+#set(SOURCES src/analysis_log.c src/analysis.c src/analysis_draft.c)
+file(GLOB SOURCES "src/*.c")
+add_executable(Assignment_2_IOT ${SOURCES})
