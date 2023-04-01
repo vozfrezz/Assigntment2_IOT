@@ -2,32 +2,43 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define FILENAME "log.txt" // chi dinh dua gia tri chuoi "log.txt" vao FILENAME
-#define MAXLENGTHFILE 5000 // kich thuoc mang gia tri 5000
+// define constants for the filename and maximum file length.
+#define FILENAME "log.txt"
+#define MAXLENGTHFILE 5000
 
-char fileStr[MAXLENGTHFILE]; // tao 1 mang co ten la fileStr kich thuong 5000
-int filetoStr(char *str); // khai bao ham nguyen mau ten filetoStr voi tham so
+// declare 2 global variables.
+char fileStr[MAXLENGTHFILE];
+int filetoStr(char *str);
 
 int main() {
+  // Read file log.txt
   filetoStr(fileStr);
-  char filecpy[MAXLENGTHFILE]; // declare an array to store the modified string
-  char *token;
+  // Declare local variables and pointers for execution purposes.
   char time_Strings[10][100];
-
   int time_Milisecond[100];
   int totalTime_Delay = 0;
   int matching_Count = 0;
+  char *token;
   const char *line_Delimiters = "\'\n\'";
 
   char request_Ids[20][100];
   int elements_Count = 0;
 
+  // Tokenize the fileStr and extract relevant information.
   token = strtok(fileStr, line_Delimiters);
+  // Get time from token and add it to the time_Strings array.
   strncpy(time_Strings[elements_Count], token + 17, 12);
+  // Add'\0' to ensure the string terminated.
   time_Strings[elements_Count][12] = '\0';
+
+  // Get request id from token and add it to the request_Ids array.
   strncpy(request_Ids[elements_Count], token + strlen(token) - 6, 6);
+  // Add'\0' to ensure the string terminated.
   request_Ids[elements_Count][6] = '\0';
+  // Plus 1 to elements_Count.
   elements_Count++;
+
+  // Continue tokenizing until the end of the fileStr
   while (token != NULL) {
     token = strtok(NULL, line_Delimiters);
     if (token != NULL) {
@@ -38,11 +49,13 @@ int main() {
       elements_Count++;
     };
   };
+  // Print time and request IDs for debugging purposes.
   for (int i = 0; i < elements_Count; i++) {
     printf("\ntime[%d]= %s, request_Ids[%d]=%s", i, time_Strings[i], i,
            request_Ids[i]);
   };
 
+  // Convert time strings to milliseconds.
   for (int i = 0; i < elements_Count; i++) {
     char *time_Part = strtok(time_Strings[i], ":");
     int hour = atoi(time_Part);
@@ -56,10 +69,12 @@ int main() {
         hour * 3600 * 1000 + minute * 60 * 1000 + second * 1000 + millisecond;
     time_Milisecond[i] = total_Milliseconds;
   };
-
+  // Print time in milliseconds for debugging purposes.
   for (int i = 0; i < elements_Count; i++) {
     printf("\ntime_Milisecond[%d]= %d", i, time_Milisecond[i]);
-  }
+  };
+  // Calculate the total and average delay between messages for debugging
+  // purposes.
   for (int i = 0; i < elements_Count; i += 2) {
     if (strcmp(request_Ids[i], request_Ids[i + 1]) == 0) {
       totalTime_Delay =
@@ -67,6 +82,8 @@ int main() {
       matching_Count++;
     };
   };
+
+  // Print the total and average delay between messages.
   printf("\nTotal delay betwwen messages: %d millisecond", totalTime_Delay);
   printf("\nAverage delay between messages:%d millisecond",
          (totalTime_Delay / matching_Count));
