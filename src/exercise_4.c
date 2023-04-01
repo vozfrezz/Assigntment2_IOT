@@ -3,26 +3,30 @@
 #include <stdlib.h>
 #include <string.h>
 
+// define constants for the filename and maximum file length.
 #define FILENAME "log.txt"
 #define MAXLENGTHFILE 5000
 
+// declare 2 global variables.
 char fileStr[MAXLENGTHFILE];
 int filetoStr(char *str);
 
 //---------------------------------------------------------------------------------//
 
 int main() {
+  // Read file log.txt
   filetoStr(fileStr);
+
+  // Declare local variables and pointers for execution purposes.
   char filecpy[MAXLENGTHFILE];
   char request_Delimiters[] = "\"reqid\"";
-
   const char *line_Delimiters = "\'\n\'";
-
   char request_Ids[20][100];
   char requid_code[100];
   int elements_Count = 0;
   int errors_Count = 0;
 
+  // Tokenize the fileStr and extract relevant information.
   char *token = strtok(fileStr, line_Delimiters);
   if (token != NULL) {
     char *token_1 = strstr(token, request_Delimiters);
@@ -30,6 +34,8 @@ int main() {
       strncpy(request_Ids[elements_Count++], token_1, strlen(token_1) - 1);
     };
   };
+
+  // Continue tokenizing until the end of the fileStr.
   while (token != NULL) {
     token = strtok(NULL, line_Delimiters);
     if (token != NULL) {
@@ -42,18 +48,23 @@ int main() {
       strcpy(request_Ids[elements_Count++], requid_code);
     };
   };
+
+  // Print request IDs for debugging purposes.
   for (int i = 0; i < elements_Count; i++) {
     printf("\nRequid[%d]= %s", i, request_Ids[i]);
   };
+  // Calculate total errors.
   for (int i = 0; i < elements_Count; i += 2) {
     if (strcmp(request_Ids[i], request_Ids[i + 1]) != 0) {
       errors_Count++;
     };
   };
+  // Print total errors.
   printf("\n ERROR: %d", errors_Count);
   return 0;
 };
 
+// Function to read the content of a file and store it in the str variable.
 int filetoStr(char *str) {
 
   int status; // khoi tao 1 bien status co dang so nguyen
