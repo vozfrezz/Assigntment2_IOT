@@ -73,8 +73,8 @@ int main() {
   for (int i = 0; i < elements_Count; i++) {
     printf("\ntime_Milisecond[%d]= %d", i, time_Milisecond[i]);
   };
-  // Calculate the total and average delay between messages for debugging
-  // purposes.
+  // Calculate the total and average delay between messages.
+
   for (int i = 0; i < elements_Count; i += 2) {
     if (strcmp(request_Ids[i], request_Ids[i + 1]) == 0) {
       totalTime_Delay =
