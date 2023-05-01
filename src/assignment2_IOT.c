@@ -15,9 +15,9 @@ const char message_sentIds[] = "\"cmd\":\"set\"";
 // read the content of the file.
 int filetoStr(char *str);
 // Reverses the given string
-void reverse_string(char *str);
+void reverseString(char *str);
 // The function calculates the number of messages that have been sent.
-int calculateMessage(char *fileStr);
+int countMessagesHaveSent(char *fileStr);
 // The function calculates the number of messages that have been sent from a
 // pre-specified device
 int countSentMessagesFromDevice(char *network_Code, char *fileStr);
@@ -26,8 +26,8 @@ int countSentMessagesFromDevice(char *network_Code, char *fileStr);
 int extractDeviceInfo(char *fileStr, char network_Id[MAXDEVICE][IDLENGTH],
                       char device_Id[MAXDEVICE][IDLENGTH]);
 // The function that calculates the number of error messages have been sent.
-int countErroredSentMessages(char *fileStr,
-                             char request_Ids[MAXDEVICE][MAXLENGTHREQID]);
+int countErrorMessagesHaveSent(char *fileStr,
+                               char request_Ids[MAXDEVICE][MAXLENGTHREQID]);
 // The function that find maximum delay between the outgoing message and the
 // response message..
 int findMaxResponseDelay(char *fileStr,
@@ -39,12 +39,12 @@ int findAverageDelay(char *fileStr, char request_Ids[MAXDEVICE][MAXLENGTHREQID],
                      char time_Strings[MAXDEVICE][MAXLENGTHREQID]);
 
 int main() {
-  char fileStr[MAXLENGTHFILE];
+  char fileStr[MAXLENGTHFILE] = "";
   char deviceID[MAXLENGTHFILE] = "";
-  char network_Id[MAXDEVICE][IDLENGTH];
-  char device_Id[MAXDEVICE][IDLENGTH];
-  char requid_Id[MAXDEVICE][MAXLENGTHREQID];
-  char time_Strings[MAXDEVICE][MAXLENGTHREQID];
+  char network_Id[MAXDEVICE][IDLENGTH] = {0};
+  char device_Id[MAXDEVICE][IDLENGTH] = {0};
+  char requid_Id[MAXDEVICE][MAXLENGTHREQID] = {0};
+  char time_Strings[MAXDEVICE][MAXLENGTHREQID] = {0};
 
   // Read file content into fileStr
   filetoStr(fileStr);
@@ -52,10 +52,10 @@ int main() {
   //---------------------------------------------------------------------------------
   // Exercise 01
   // Process the file content and get the number of messages sent
-  int messageSent_Count = calculateMessage(fileStr);
+  int messageSentCount = countMessagesHaveSent(fileStr);
 
   // Print the number of messages sent.
-  printf("The number of messages sent:%d\n", messageSent_Count);
+  printf("The number of messages sent:%d\n", messageSentCount);
 
   //---------------------------------------------------------------------------------
   // Exercise 02
@@ -78,7 +78,7 @@ int main() {
 */
   //---------------------------------------------------------------------------------
   // Exercise 04
-  /*int countErrorRequid = countErroredSentMessages(fileStr, requid_Id);
+  /*int countErrorRequid = countErrorMessagesHaveSent(fileStr, requid_Id);
   // Print total errors.
   printf("\n ERROR: %d", countErrorRequid);
 */
@@ -99,54 +99,55 @@ int main() {
   return 0;
 }
 
-int calculateMessage(char *fileStr) {
+int countMessagesHaveSent(char *fileStr) {
   char file_Copy[MAXLENGTHFILE];
-  int messageSent_Count = 0;
+  int messageSentCount = 0;
 
   // Search for the occurrence of messagesSentIds in fileStr
-  char *str_search = strstr(fileStr, message_sentIds);
+  char *ptrFoundMsgSentId = strstr(fileStr, message_sentIds);
 
   // Iterate through all occurrences of messagesSentIds in fileStr
-  while (str_search != NULL) {
+  while (ptrFoundMsgSentId != NULL) {
     // Reverse the found string
-    reverse_string(str_search);
+    reverseString(ptrFoundMsgSentId);
 
     // Calculate the length difference between the reversed found string and
     // messagesSentIds
-    int num = strlen(str_search) - strlen(message_sentIds);
+    int lengthWithoutmsgSenIds =
+        strlen(ptrFoundMsgSentId) - strlen(message_sentIds);
 
     // Copy the substring from the reversed found string to fileCpy
-    strncpy(file_Copy, str_search, num);
+    strncpy(file_Copy, ptrFoundMsgSentId, lengthWithoutmsgSenIds);
 
     // Add '\0' to ensure the string terminated
-    file_Copy[num] = '\0';
+    file_Copy[lengthWithoutmsgSenIds] = '\0';
 
     // Reverse the substring back to its original form
-    reverse_string(file_Copy);
+    reverseString(file_Copy);
 
     // Update the original found string with the modified substring
-    strcpy(str_search, file_Copy);
+    strcpy(ptrFoundMsgSentId, file_Copy);
 
     // Search for the next occurrence of messagesSentIds
-    str_search = strstr(str_search, message_sentIds);
+    ptrFoundMsgSentId = strstr(ptrFoundMsgSentId, message_sentIds);
 
     // Increment the messages sent count
-    messageSent_Count++;
+    messageSentCount++;
   }
 
-  return messageSent_Count;
+  return messageSentCount;
 }
 
 int countSentMessagesFromDevice(char *network_Code, char *fileStr) {
 
-  int messageSent_Count = 0;
+  int messageSentCount = 0;
 
   // Tokenize the fileStr and extract relevant information.
   char *token = strtok(fileStr, line_Delimiters);
   if (strstr(token, message_sentIds) && strstr(token, network_Code)) {
     // Print token for debugging purposes.
     printf("\n%s", token);
-    messageSent_Count++;
+    messageSentCount++;
   };
 
   // Continue tokenizing until the end of the fileStr.
@@ -156,10 +157,10 @@ int countSentMessagesFromDevice(char *network_Code, char *fileStr) {
     if (token != NULL && strstr(token, message_sentIds) &&
         strstr(token, network_Code)) {
       printf("\n%s", token);
-      messageSent_Count++;
+      messageSentCount++;
     };
   };
-  return messageSent_Count;
+  return messageSentCount;
 }
 
 // exercise 3.............................................................
@@ -226,8 +227,8 @@ int extractDeviceInfo(char *fileStr, char network_Id[MAXDEVICE][IDLENGTH],
 }
 
 //.......................................................................
-int countErroredSentMessages(char *fileStr,
-                             char request_Ids[MAXDEVICE][MAXLENGTHREQID]) {
+int countErrorMessagesHaveSent(char *fileStr,
+                               char request_Ids[MAXDEVICE][MAXLENGTHREQID]) {
   char request_Delimiters[] = "\"reqid\"";
   char requid_code[MAXLENGTHREQID];
   int elements_Count = 0;
@@ -438,7 +439,7 @@ int filetoStr(char *str) {
   return status; // tra ve gia tri la status
 };
 
-void reverse_string(char *str) {
+void reverseString(char *str) {
   int length = strlen(str);
   int i, j;
 
