@@ -62,14 +62,13 @@ int main() {
 
   //---------------------------------------------------------------------------------
   // Exercise 02
-  /* printf("\nEnter network address:"); */
-  /* scanf("%s", inputNetworkAddress); */
-  /* getchar(); */
-  /* printf("\nThe network address: %s", inputNetworkAddress); */
-  /* int reportSentFromDevice = */
-  /*     countOutgoingReportFromDevice(inputNetworkAddress, fileStr); */
-  /* printf("\nThe numbers of report have been sent=: %d",
-   * reportSentFromDevice); */
+  printf("\nEnter network address:");
+  scanf("%s", inputNetworkAddress);
+  getchar();
+  printf("\nThe network address: %s", inputNetworkAddress);
+  int reportSentFromDevice =
+      countOutgoingReportFromDevice(inputNetworkAddress, fileStr);
+  printf("\nThe numbers of report have been sent=: %d", reportSentFromDevice);
 
   //---------------------------------------------------------------------------------
   // Exercise 03
@@ -96,9 +95,10 @@ int main() {
 
   //---------------------------------------------------------------------------------
   // Exercise 06
-  int averageResponseDelays = findAverageDelay(fileStr, requestID, timeString);
-  printf("\nAverage delay between reports:%d millisecond",
-         averageResponseDelays);
+  /* int averageResponseDelays = findAverageDelay(fileStr, requestID,
+   * timeString); */
+  /* printf("\nAverage delay between reports:%d millisecond", */
+  /*        averageResponseDelays); */
 
   //---------------------------------------------------------------------------------
   return 0;
@@ -109,20 +109,20 @@ int countReportsHaveSent(char *fileStr) {
   int reportSentCount = 0;
 
   // Search for the occurrence of reportsSentIds in fileStr
-  char *ptrFoundMsgSentId = strstr(fileStr, outgoingReportToken);
+  char *reportToken = strstr(fileStr, outgoingReportToken);
 
   // Iterate through all occurrences of reportsSentIds in fileStr
-  while (ptrFoundMsgSentId != NULL) {
+  while (reportToken != NULL) {
     // Reverse the found string
-    reverseString(ptrFoundMsgSentId);
+    reverseString(reportToken);
 
     // Calculate the length difference between the reversed found string and
     // reportsSentIds
     int lengthWithoutmsgSenIds =
-        strlen(ptrFoundMsgSentId) - strlen(outgoingReportToken);
+        strlen(reportToken) - strlen(outgoingReportToken);
 
     // Copy the substring from the reversed found string to fileCpy
-    strncpy(file_Copy, ptrFoundMsgSentId, lengthWithoutmsgSenIds);
+    strncpy(file_Copy, reportToken, lengthWithoutmsgSenIds);
 
     // Add '\0' to ensure the string terminated
     file_Copy[lengthWithoutmsgSenIds] = '\0';
@@ -131,10 +131,10 @@ int countReportsHaveSent(char *fileStr) {
     reverseString(file_Copy);
 
     // Update the original found string with the modified substring
-    strcpy(ptrFoundMsgSentId, file_Copy);
+    strcpy(reportToken, file_Copy);
 
     // Search for the next occurrence of reportsSentIds
-    ptrFoundMsgSentId = strstr(ptrFoundMsgSentId, outgoingReportToken);
+    reportToken = strstr(reportToken, outgoingReportToken);
 
     // Increment the reports sent count
     reportSentCount++;
@@ -150,21 +150,15 @@ int countOutgoingReportFromDevice(char *networkAddress, char *fileStr) {
 
   // Tokenize the fileStr and extract relevant information.
   char *report = strtok(fileStr, lineDelimiter);
-  if (strstr(report, outgoingReportToken) && strstr(report, networkAddress)) {
-    // Print report for debugging purposes.
-    printf("\n%s", report);
-    reportSentCount++;
-  };
-
   // Continue reportizing until the end of the fileStr.
   while (report != NULL) {
-    // Tokenize the fileStr and extract relevant information.
-    report = strtok(NULL, lineDelimiter);
-    if (report != NULL && strstr(report, outgoingReportToken) &&
-        strstr(report, networkAddress)) {
+    if (strstr(report, outgoingReportToken) && strstr(report, networkAddress)) {
+      // Print report for debugging purposes.
       printf("\n%s", report);
       reportSentCount++;
     };
+    // Tokenize the fileStr and extract relevant information.
+    report = strtok(NULL, lineDelimiter);
   };
   return reportSentCount;
 }
