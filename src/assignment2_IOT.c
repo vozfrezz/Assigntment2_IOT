@@ -3,118 +3,122 @@
 #include <string.h>
 // define constants for the filename and maximum file length.
 #define FILENAME "log.txt"
-#define MAXLENGTHFILE 5000
-#define IDLENGTH 5
+#define MAX_LENGTH_FILE 5000
+#define NETWORK_ADDRESS_LENGTH 4
 #define MAXDEVICE 20
 #define MAXLENGTHREQID 100
 
-const char *line_Delimiters = "\'\n\'";
-const char *colon_Delimiters = ":";
-const char *comma_Delimiters = ".";
-const char message_sentIds[] = "\"cmd\":\"set\"";
+const char *lineDelimiter = "\'\n\'";
+const char *colonDelimiter = ":";
+const char *commaDelimiter = ".";
+const char outgoingReportToken[] = "\"cmd\":\"set\"";
+const char networkAddressToken[] = "\"type\":\"switch\",\"data\":[\"zwave-";
+const char requestDelimiter[] = "\"reqid\"";
 // read the content of the file.
 int filetoStr(char *str);
 // Reverses the given string
 void reverseString(char *str);
-// The function calculates the number of messages that have been sent.
-int countMessagesHaveSent(char *fileStr);
-// The function calculates the number of messages that have been sent from a
+// The function calculates the number of reports that have been sent.
+int countReportsHaveSent(char *fileStr);
+// The function calculates the number of reports that have been sent from a
 // pre-specified device
-int countSentMessagesFromDevice(char *network_Code, char *fileStr);
-// The function extract the number and adress of swiches that have exchanged
+int countOutgoingReportFromDevice(char *networkAddress, char *fileStr);
+// The function extract the number and address of swiches that have exchanged
 // information with the central of controller.
-int extractDeviceInfo(char *fileStr, char network_Id[MAXDEVICE][IDLENGTH],
-                      char device_Id[MAXDEVICE][IDLENGTH]);
-// The function that calculates the number of error messages have been sent.
-int countErrorMessagesHaveSent(char *fileStr,
-                               char request_Ids[MAXDEVICE][MAXLENGTHREQID]);
-// The function that find maximum delay between the outgoing message and the
-// response message..
+int getAdressAndEndpointOfSwitch(
+    char *fileStr, char networkIds[MAXDEVICE][NETWORK_ADDRESS_LENGTH],
+    char enpointIds[MAXDEVICE][NETWORK_ADDRESS_LENGTH]);
+// The function that calculates the number of error reports have been sent.
+int countErrorReportsHaveSent(char *fileStr,
+                              char requestIds[MAXDEVICE][MAXLENGTHREQID]);
+// The function that find maximum delay between the outgoing report and the
+// response report..
 int findMaxResponseDelay(char *fileStr,
-                         char request_Ids[MAXDEVICE][MAXLENGTHREQID],
-                         char time_Strings[MAXDEVICE][MAXLENGTHREQID]);
-// the function that calculate average delay between the outgoing message and
-// the response message.
-int findAverageDelay(char *fileStr, char request_Ids[MAXDEVICE][MAXLENGTHREQID],
-                     char time_Strings[MAXDEVICE][MAXLENGTHREQID]);
+                         char requestIds[MAXDEVICE][MAXLENGTHREQID],
+                         char timeString[MAXDEVICE][MAXLENGTHREQID]);
+// the function that calculate average delay between the outgoing report and
+// the response report.
+int findAverageDelay(char *fileStr, char requestIds[MAXDEVICE][MAXLENGTHREQID],
+                     char timeString[MAXDEVICE][MAXLENGTHREQID]);
 
 int main() {
-  char fileStr[MAXLENGTHFILE] = "";
-  char deviceID[MAXLENGTHFILE] = "";
-  char network_Id[MAXDEVICE][IDLENGTH] = {0};
-  char device_Id[MAXDEVICE][IDLENGTH] = {0};
-  char requid_Id[MAXDEVICE][MAXLENGTHREQID] = {0};
-  char time_Strings[MAXDEVICE][MAXLENGTHREQID] = {0};
+  char fileStr[MAX_LENGTH_FILE] = "";
+  char inputNetworkAddress[MAX_LENGTH_FILE] = "";
+  char networksID[MAXDEVICE][NETWORK_ADDRESS_LENGTH] = {0};
+  char enpointIds[MAXDEVICE][NETWORK_ADDRESS_LENGTH] = {0};
+  char requestID[MAXDEVICE][MAXLENGTHREQID] = {0};
+  char timeString[MAXDEVICE][MAXLENGTHREQID] = {0};
 
   // Read file content into fileStr
   filetoStr(fileStr);
+  //---------------------------------------------------------------------------------
+  /* // Exercise 01 */
+  /* // Process the file content and get the number of reports sent */
+  /* int numberOutgoingReport = countReportsHaveSent(fileStr); */
+  /* // Print the number of reports sent. */
+  /* printf("The number of reports sent:%d\n", numberOutgoingReport); */
 
   //---------------------------------------------------------------------------------
-  // Exercise 01
-  // Process the file content and get the number of messages sent
-  int messageSentCount = countMessagesHaveSent(fileStr);
+  /* // Exercise 02 */
+  /* printf("\nEnter network address:"); */
+  /* scanf("%s", inputNetworkAddress); */
+  /* getchar(); */
+  /* printf("\nThe network address: %s", inputNetworkAddress); */
+  /* int reportSentFromDevice = */
+  /*     countOutgoingReportFromDevice(inputNetworkAddress, fileStr); */
+  /* printf("\nThe numbers of report have been sent=: %d",
+   * reportSentFromDevice); */
 
-  // Print the number of messages sent.
-  printf("The number of messages sent:%d\n", messageSentCount);
-
-  //---------------------------------------------------------------------------------
-  // Exercise 02
-  /* printf("\nEnter network token:");
-   scanf("%s", deviceID);
-   getchar();
-   printf("\nNetwork token: %s", deviceID);
-   int messageSentFromDevice = countSentMessagesFromDevice(deviceID, fileStr);
-   printf("\nThe numbers of message sent=: %d", messageSentFromDevice);
- */
   //---------------------------------------------------------------------------------
   // Exercise 03
   /*
-  int elementsNumber = extractDeviceInfo(fileStr, network_Id, device_Id);
-  // Print the network address and enpoint.
+  int elementsNumber = getAdressAndEndpointOfSwitch(fileStr, networksID,
+  enpointIds);
+  // Print the network address and endpoint.
   for (int i = 0; i < elementsNumber; i++) {
     printf("\nThe device %d have the address:NWK: %s, ENDPOINT:%s\n", i,
-           network_Id[i], device_Id[i]);
+           networksID[i], enpointIds[i]);
   };
 */
   //---------------------------------------------------------------------------------
   // Exercise 04
-  /*int countErrorRequid = countErrorMessagesHaveSent(fileStr, requid_Id);
+  int countErrorRequid = countErrorReportsHaveSent(fileStr, requestID);
   // Print total errors.
   printf("\n ERROR: %d", countErrorRequid);
-*/
+
   //---------------------------------------------------------------------------------
   // Exercise 05
   /*  int maxResponseDelays =
-        findMaxResponseDelay(fileStr, requid_Id, time_Strings);
+        findMaxResponseDelay(fileStr, requestID, timeString);
     printf("\nThe value of max delay equal: %d millisecond", maxResponseDelays);
     */
   //---------------------------------------------------------------------------------
   // Exercise 06
   /* int averageResponseDelays =
-       findAverageDelay(fileStr, requid_Id, time_Strings);
-   printf("\nAverage delay between messages:%d millisecond",
+       findAverageDelay(fileStr, requestID, timeString);
+   printf("\nAverage delay between reports:%d millisecond",
           averageResponseDelays);
          */
   //---------------------------------------------------------------------------------
   return 0;
 }
 
-int countMessagesHaveSent(char *fileStr) {
-  char file_Copy[MAXLENGTHFILE];
-  int messageSentCount = 0;
+int countReportsHaveSent(char *fileStr) {
+  char file_Copy[MAX_LENGTH_FILE];
+  int reportSentCount = 0;
 
-  // Search for the occurrence of messagesSentIds in fileStr
-  char *ptrFoundMsgSentId = strstr(fileStr, message_sentIds);
+  // Search for the occurrence of reportsSentIds in fileStr
+  char *ptrFoundMsgSentId = strstr(fileStr, outgoingReportToken);
 
-  // Iterate through all occurrences of messagesSentIds in fileStr
+  // Iterate through all occurrences of reportsSentIds in fileStr
   while (ptrFoundMsgSentId != NULL) {
     // Reverse the found string
     reverseString(ptrFoundMsgSentId);
 
     // Calculate the length difference between the reversed found string and
-    // messagesSentIds
+    // reportsSentIds
     int lengthWithoutmsgSenIds =
-        strlen(ptrFoundMsgSentId) - strlen(message_sentIds);
+        strlen(ptrFoundMsgSentId) - strlen(outgoingReportToken);
 
     // Copy the substring from the reversed found string to fileCpy
     strncpy(file_Copy, ptrFoundMsgSentId, lengthWithoutmsgSenIds);
@@ -128,210 +132,189 @@ int countMessagesHaveSent(char *fileStr) {
     // Update the original found string with the modified substring
     strcpy(ptrFoundMsgSentId, file_Copy);
 
-    // Search for the next occurrence of messagesSentIds
-    ptrFoundMsgSentId = strstr(ptrFoundMsgSentId, message_sentIds);
+    // Search for the next occurrence of reportsSentIds
+    ptrFoundMsgSentId = strstr(ptrFoundMsgSentId, outgoingReportToken);
 
-    // Increment the messages sent count
-    messageSentCount++;
+    // Increment the reports sent count
+    reportSentCount++;
   }
 
-  return messageSentCount;
+  return reportSentCount;
 }
 
-int countSentMessagesFromDevice(char *network_Code, char *fileStr) {
+// .....................EXERCISE 2................................................
+int countOutgoingReportFromDevice(char *networkAddress, char *fileStr) {
 
-  int messageSentCount = 0;
+  int reportSentCount = 0;
 
   // Tokenize the fileStr and extract relevant information.
-  char *token = strtok(fileStr, line_Delimiters);
-  if (strstr(token, message_sentIds) && strstr(token, network_Code)) {
+  char *token = strtok(fileStr, lineDelimiter);
+  if (strstr(token, outgoingReportToken) && strstr(token, networkAddress)) {
     // Print token for debugging purposes.
     printf("\n%s", token);
-    messageSentCount++;
+    reportSentCount++;
   };
 
   // Continue tokenizing until the end of the fileStr.
   while (token != NULL) {
     // Tokenize the fileStr and extract relevant information.
-    token = strtok(NULL, line_Delimiters);
-    if (token != NULL && strstr(token, message_sentIds) &&
-        strstr(token, network_Code)) {
+    token = strtok(NULL, lineDelimiter);
+    if (token != NULL && strstr(token, outgoingReportToken) &&
+        strstr(token, networkAddress)) {
       printf("\n%s", token);
-      messageSentCount++;
+      reportSentCount++;
     };
   };
-  return messageSentCount;
+  return reportSentCount;
 }
 
-// exercise 3.............................................................
-
-int extractDeviceInfo(char *fileStr, char network_Id[MAXDEVICE][IDLENGTH],
-                      char device_Id[MAXDEVICE][IDLENGTH]) {
-  char filecpy[MAXLENGTHFILE];
-  char netword_AddressIds[] = "\"type\":\"switch\",\"data\":[\"zwave-";
-  int elements_Count = 0;
-  char network_IdCode[IDLENGTH];
-  char device_IdCode[IDLENGTH];
+// .....................EXERCISE 3................................................
+int getAdressAndEndpointOfSwitch(
+    char *fileStr, char networkIds[MAXDEVICE][NETWORK_ADDRESS_LENGTH],
+    char enpointIds[MAXDEVICE][NETWORK_ADDRESS_LENGTH]) {
+  int elementCount = 0;
+  char networkId[NETWORK_ADDRESS_LENGTH];
+  char enpointId[NETWORK_ADDRESS_LENGTH];
+  int lenOfNetworkAddressToken = strlen(networkAddressToken);
 
   // Tokenize the fileStr and extract relevant information.
-  char *token = strtok(fileStr, line_Delimiters);
+  char *token = strtok(fileStr, lineDelimiter);
   // Print token for debugging purposes.
   printf("Token: %s\n", token);
 
   // Continue tokenizing until the end of the fileStr.
   while (token != NULL) {
-    token = strtok(NULL, line_Delimiters);
-    if (token != NULL) {
-      char *message_SentToken = strstr(token, message_sentIds);
-      // Check if message sent token is not NULL.
-      if (message_SentToken != NULL) {
-        // Print message sent token for debugging purposes.
-        printf("\ncmd_Set: %s\n", message_SentToken);
-        // Extract network address from network address id.
-        char *netword_AddressToken =
-            strstr(message_SentToken, netword_AddressIds);
-        if (netword_AddressToken != NULL) {
-          printf("type_Swich: %s\n", netword_AddressToken);
-          // Get network address from network adress token.
-          strncpy(network_IdCode, netword_AddressToken + 31, 4);
-          // Add'\0' to ensure the string terminated.
-          network_IdCode[4] = '\0';
-          // Get device code from network address token
-          strncpy(device_IdCode, netword_AddressToken + 38, 1);
-          // Add'\0' to ensure the string terminated.
-          device_IdCode[1] = '\0';
-          // print network address and device for debugging purposes.
-          printf("\n string: %s", network_IdCode);
-          printf("\n device code: %s", device_IdCode);
-          int isNotNewDevice = 0;
-          // Found new device.
-          for (int i = 0; i < elements_Count; i++) {
-            if (strcmp(network_IdCode, network_Id[i]) == 0 &&
-                strcmp(device_IdCode, device_Id[i]) == 0) {
-              isNotNewDevice = 1;
-              break;
-            };
-          };
-          // Add network address and endpoint.
-          if (!isNotNewDevice) {
-            strcpy(network_Id[elements_Count], network_IdCode);
-            strcpy(device_Id[elements_Count], device_IdCode);
-            elements_Count++;
-          };
-        }
-      }
-    };
+    // Extract network address from network address id.
+    char *netword_AddressToken = strstr(token, networkAddressToken);
+    if (netword_AddressToken != NULL) {
+      printf("type_Swich: %s\n", netword_AddressToken);
+      // Get network address from network address token.
+      strncpy(networkId, netword_AddressToken + lenOfNetworkAddressToken,
+              NETWORK_ADDRESS_LENGTH);
+      // Add'\0' to ensure the string terminated.
+      networkId[NETWORK_ADDRESS_LENGTH - 1] = '\0';
+      // Get device code from network address token
+      strncpy(enpointId, netword_AddressToken + 38, 1);
+      // Add'\0' to ensure the string terminated.
+      enpointId[1] = '\0';
+      // print network address and device for debugging purposes.
+      printf("\n string: %s", networkId);
+      printf("\n device code: %s", enpointId);
+      int isNotNewDevice = 0;
+      // Found new device.
+      for (int i = 0; i < elementCount; i++) {
+        if (strcmp(networkId, networkIds[i]) == 0 &&
+            strcmp(enpointId, enpointIds[i]) == 0) {
+          isNotNewDevice = 1;
+          break;
+        };
+      };
+      // Add network address and endpoint.
+      if (!isNotNewDevice) {
+        strcpy(networkIds[elementCount], networkId);
+        strcpy(enpointIds[elementCount], enpointId);
+        elementCount++;
+      };
+    }
+    token = strtok(NULL, lineDelimiter);
   };
 
-  return elements_Count;
+  return elementCount;
 }
 
-//.......................................................................
-int countErrorMessagesHaveSent(char *fileStr,
-                               char request_Ids[MAXDEVICE][MAXLENGTHREQID]) {
-  char request_Delimiters[] = "\"reqid\"";
-  char requid_code[MAXLENGTHREQID];
-  int elements_Count = 0;
+// .....................EXERCISE 4................................................
+int countErrorReportsHaveSent(char *fileStr,
+                              char requestIds[MAXDEVICE][MAXLENGTHREQID]) {
+  int elementCount = 0;
   int errors_Count = 0;
   // Tokenize the fileStr and extract relevant information.
-  char *token = strtok(fileStr, line_Delimiters);
-  if (token != NULL) {
-    char *token_1 = strstr(token, request_Delimiters);
-    if (token_1 != NULL) {
-      strncpy(request_Ids[elements_Count++], token_1, strlen(token_1) - 1);
-    };
-  };
-
+  char *reportToken = strtok(fileStr, lineDelimiter);
   // Continue tokenizing until the end of the fileStr.
-  while (token != NULL) {
-    token = strtok(NULL, line_Delimiters);
-    if (token != NULL) {
-      char *token_2 = strstr(token, request_Delimiters);
-      if (token_2 != NULL) {
-        // printf("\nrequest_Delimiters: %s\n", token_2);
-        strncpy(requid_code, token_2, strlen(token_2) - 1);
-        requid_code[strlen(token_2) - 1] = '\0';
-      };
-      strcpy(request_Ids[elements_Count++], requid_code);
+  while (reportToken != NULL) {
+    char *requestToken = strstr(reportToken, requestDelimiter);
+    if (requestToken != NULL) {
+      strncpy(requestIds[elementCount++], requestToken,
+              strlen(requestToken) - 1);
     };
+    reportToken = strtok(NULL, lineDelimiter);
   };
 
   // Print request IDs for debugging purposes.
-  for (int i = 0; i < elements_Count; i++) {
-    printf("\nRequid[%d]= %s", i, request_Ids[i]);
+  for (int i = 0; i < elementCount; i++) {
+    printf("\nRequid[%d]= %s", i, requestIds[i]);
   };
   // Calculate total errors.
-  for (int i = 0; i < elements_Count; i += 2) {
-    if (strcmp(request_Ids[i], request_Ids[i + 1]) != 0) {
+  for (int i = 0; i < elementCount; i += 2) {
+    if (strcmp(requestIds[i], requestIds[i + 1]) != 0) {
       errors_Count++;
     };
   };
   return errors_Count;
 }
-//.......................................................................
 
+// .....................EXERCISE 5................................................
 int findMaxResponseDelay(char *fileStr,
-                         char request_Ids[MAXDEVICE][MAXLENGTHREQID],
-                         char time_Strings[MAXDEVICE][MAXLENGTHREQID]) {
-  int time_Milisecond[MAXLENGTHREQID];
+                         char requestIds[MAXDEVICE][MAXLENGTHREQID],
+                         char timeString[MAXDEVICE][MAXLENGTHREQID]) {
+  int timeMilisecond[MAXLENGTHREQID];
   int max_Delay = 0;
-  int elements_Count = 0;
+  int elementCount = 0;
 
   // Tokenize the fileStr and extract relevant information.
-  char *token = strtok(fileStr, line_Delimiters);
-  // Get time from token and add it to the time_Strings array.
-  strncpy(time_Strings[elements_Count], token + 17, 12);
+  char *token = strtok(fileStr, lineDelimiter);
+  // Get time from token and add it to the timeString array.
+  strncpy(timeString[elementCount], token + 17, 12);
   // Add'\0' to ensure the string terminated.
-  time_Strings[elements_Count][12] = '\0';
-  // Get request id from token and add it to the request_Ids array.
-  strncpy(request_Ids[elements_Count], token + strlen(token) - 6, 6);
+  timeString[elementCount][12] = '\0';
+  // Get request id from token and add it to the requestIds array.
+  strncpy(requestIds[elementCount], token + strlen(token) - 6, 6);
   // Add'\0' to ensure the string terminated.
-  request_Ids[elements_Count][6] = '\0';
-  // Plus 1 to elements_Count.
-  elements_Count++;
+  requestIds[elementCount][6] = '\0';
+  // Plus 1 to elementCount.
+  elementCount++;
 
   // Continue tokenizing until the end of the fileStr
   while (token != NULL) {
-    token = strtok(NULL, line_Delimiters);
+    token = strtok(NULL, lineDelimiter);
     if (token != NULL) {
-      strncpy(time_Strings[elements_Count], token + 17, 12);
-      time_Strings[elements_Count][12] = '\0';
-      strncpy(request_Ids[elements_Count], token + strlen(token) - 6, 6);
-      request_Ids[elements_Count][6] = '\0';
-      elements_Count++;
+      strncpy(timeString[elementCount], token + 17, 12);
+      timeString[elementCount][12] = '\0';
+      strncpy(requestIds[elementCount], token + strlen(token) - 6, 6);
+      requestIds[elementCount][6] = '\0';
+      elementCount++;
     };
   };
 
   // Print time and request IDs for debugging purposes.
-  for (int i = 0; i < elements_Count; i++) {
-    printf("\nTime[%d]= %s, request_Ids[%d]=%s", i, time_Strings[i], i,
-           request_Ids[i]);
+  for (int i = 0; i < elementCount; i++) {
+    printf("\nTime[%d]= %s, requestIds[%d]=%s", i, timeString[i], i,
+           requestIds[i]);
   };
 
   // Convert time strings to milliseconds.
-  for (int i = 0; i < elements_Count; i++) {
-    char *time_Part = strtok(time_Strings[i], colon_Delimiters);
+  for (int i = 0; i < elementCount; i++) {
+    char *time_Part = strtok(timeString[i], colonDelimiter);
     int hour = atoi(time_Part);
-    time_Part = strtok(NULL, colon_Delimiters);
+    time_Part = strtok(NULL, colonDelimiter);
     int minute = atoi(time_Part);
-    time_Part = strtok(NULL, comma_Delimiters);
+    time_Part = strtok(NULL, commaDelimiter);
     int second = atoi(time_Part);
-    time_Part = strtok(NULL, comma_Delimiters);
+    time_Part = strtok(NULL, commaDelimiter);
     int millisecond = atoi(time_Part);
     long total_milliseconds =
         hour * 3600 * 1000 + minute * 60 * 1000 + second * 1000 + millisecond;
-    time_Milisecond[i] = total_milliseconds;
+    timeMilisecond[i] = total_milliseconds;
   };
 
   // Print time in milliseconds for debugging purposes.
-  for (int i = 0; i < elements_Count; i++) {
-    printf("\ntime_Milisecond[%d]= %d", i, time_Milisecond[i]);
+  for (int i = 0; i < elementCount; i++) {
+    printf("\ntimeMilisecond[%d]= %d", i, timeMilisecond[i]);
   };
 
-  // Calculate max delay between messages.
-  for (int i = 0; i < elements_Count; i += 2) {
-    if (strcmp(request_Ids[i], request_Ids[i + 1]) == 0) {
-      int result = time_Milisecond[i + 1] - time_Milisecond[i];
+  // Calculate max delay between reports.
+  for (int i = 0; i < elementCount; i += 2) {
+    if (strcmp(requestIds[i], requestIds[i + 1]) == 0) {
+      int result = timeMilisecond[i + 1] - timeMilisecond[i];
       if (result > max_Delay) {
         max_Delay = result;
       };
@@ -340,73 +323,73 @@ int findMaxResponseDelay(char *fileStr,
   return max_Delay;
 }
 
-//.......................................................................
-int findAverageDelay(char *fileStr, char request_Ids[MAXDEVICE][MAXLENGTHREQID],
-                     char time_Strings[MAXDEVICE][MAXLENGTHREQID]) {
+// .....................EXERCISE 6................................................
+int findAverageDelay(char *fileStr, char requestIds[MAXDEVICE][MAXLENGTHREQID],
+                     char timeString[MAXDEVICE][MAXLENGTHREQID]) {
 
-  int time_Milisecond[MAXLENGTHREQID];
+  int timeMilisecond[MAXLENGTHREQID];
   int totalTime_Delay = 0;
   int matching_Count = 0;
   int averageDelays = 0;
   char *token;
 
-  int elements_Count = 0;
+  int elementCount = 0;
 
   // Tokenize the fileStr and extract relevant information.
-  token = strtok(fileStr, line_Delimiters);
-  // Get time from token and add it to the time_Strings array.
-  strncpy(time_Strings[elements_Count], token + 17, 12);
+  token = strtok(fileStr, lineDelimiter);
+  // Get time from token and add it to the timeString array.
+  strncpy(timeString[elementCount], token + 17, 12);
   // Add'\0' to ensure the string terminated.
-  time_Strings[elements_Count][12] = '\0';
+  timeString[elementCount][12] = '\0';
 
-  // Get request id from token and add it to the request_Ids array.
-  strncpy(request_Ids[elements_Count], token + strlen(token) - 6, 6);
+  // Get request id from token and add it to the requestIds array.
+  strncpy(requestIds[elementCount], token + strlen(token) - 6, 6);
   // Add'\0' to ensure the string terminated.
-  request_Ids[elements_Count][6] = '\0';
-  // Plus 1 to elements_Count.
-  elements_Count++;
+  requestIds[elementCount][6] = '\0';
+  // Plus 1 to elementCount.
+  elementCount++;
 
   // Continue tokenizing until the end of the fileStr
   while (token != NULL) {
-    token = strtok(NULL, line_Delimiters);
+    token = strtok(NULL, lineDelimiter);
     if (token != NULL) {
-      strncpy(time_Strings[elements_Count], token + 17, 12);
-      time_Strings[elements_Count][12] = '\0';
-      strncpy(request_Ids[elements_Count], token + strlen(token) - 6, 6);
-      request_Ids[elements_Count][6] = '\0';
-      elements_Count++;
+      strncpy(timeString[elementCount], token + 17, 12);
+      timeString[elementCount][12] = '\0';
+      strncpy(requestIds[elementCount], token + strlen(token) - 6, 6);
+      requestIds[elementCount][6] = '\0';
+      elementCount++;
     };
   };
   // Print time and request IDs for debugging purposes.
-  for (int i = 0; i < elements_Count; i++) {
-    printf("\ntime[%d]= %s, request_Ids[%d]=%s", i, time_Strings[i], i,
-           request_Ids[i]);
+  for (int i = 0; i < elementCount; i++) {
+    printf("\ntime[%d]= %s, requestIds[%d]=%s", i, timeString[i], i,
+           requestIds[i]);
   };
 
   // Convert time strings to milliseconds.
-  for (int i = 0; i < elements_Count; i++) {
-    char *time_Part = strtok(time_Strings[i], colon_Delimiters);
+  for (int i = 0; i < elementCount; i++) {
+    char *time_Part = strtok(timeString[i], colonDelimiter);
     int hour = atoi(time_Part);
-    time_Part = strtok(NULL, colon_Delimiters);
+    time_Part = strtok(NULL, colonDelimiter);
     int minute = atoi(time_Part);
-    time_Part = strtok(NULL, comma_Delimiters);
+    time_Part = strtok(NULL, commaDelimiter);
     int second = atoi(time_Part);
-    time_Part = strtok(NULL, comma_Delimiters);
+    time_Part = strtok(NULL, commaDelimiter);
     int millisecond = atoi(time_Part);
     long total_Milliseconds =
         hour * 3600 * 1000 + minute * 60 * 1000 + second * 1000 + millisecond;
-    time_Milisecond[i] = total_Milliseconds;
+    timeMilisecond[i] = total_Milliseconds;
   };
   // Print time in milliseconds for debugging purposes.
-  for (int i = 0; i < elements_Count; i++) {
-    printf("\ntime_Milisecond[%d]= %d", i, time_Milisecond[i]);
+  for (int i = 0; i < elementCount; i++) {
+    printf("\ntimeMilisecond[%d]= %d", i, timeMilisecond[i]);
   };
-  // Calculate the total and average delay between messages.
+  // Calculate the total and average delay between reports.
 
-  for (int i = 0; i < elements_Count; i += 2) {
-    if (strcmp(request_Ids[i], request_Ids[i + 1]) == 0) {
+  for (int i = 0; i < elementCount; i += 2) {
+    if (strcmp(requestIds[i], requestIds[i + 1]) == 0) {
       totalTime_Delay =
-          totalTime_Delay + (time_Milisecond[i + 1] - time_Milisecond[i]);
+          totalTime_Delay + (timeMilisecond[i + 1] - timeMilisecond[i]);
       matching_Count++;
     };
   };
@@ -431,7 +414,7 @@ int filetoStr(char *str) {
     // qua la file rong
     return -1; // tra ve gia tri la -1
   }
-  status = fread(str, MAXLENGTHFILE, 1, fp);
+  status = fread(str, MAX_LENGTH_FILE, 1, fp);
   // printf("Noi dung cua file log.txt: \n%s",
   //        str);   // in noi dung cua file log.txt ra cua so terminal
   fclose(fp);    // dong file
